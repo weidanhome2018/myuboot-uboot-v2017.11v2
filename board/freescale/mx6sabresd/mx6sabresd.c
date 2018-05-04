@@ -142,28 +142,29 @@ static iomux_v3_cfg_t const enet_pads[] = {
 
 static void setup_iomux_enet(void)
 {
-	imx_iomux_v3_setup_multiple_pads(enet_pads, ARRAY_SIZE(enet_pads));
+	SETUP_IOMUX_PADS(enet_pads);
 #ifdef EMBEDSKY_E9
-	unsigned int reg;
+	//unsigned int reg;
 	/* phy reset: gpio1-25 */
-	reg = readl(GPIO1_BASE_ADDR + 0x0);
-	reg &= ~0x2000000;
-	writel(reg, GPIO1_BASE_ADDR + 0x0);
+	//reg = readl(GPIO1_BASE_ADDR + 0x0);
+	//reg &= ~0x2000000;
+	//writel(reg, GPIO1_BASE_ADDR + 0x0);
 
-	reg = readl(GPIO1_BASE_ADDR + 0x4);
-	reg |= 0x2000000;
-	writel(reg, GPIO1_BASE_ADDR + 0x4);
+	//reg = readl(GPIO1_BASE_ADDR + 0x4);
+	//reg |= 0x2000000;
+	//writel(reg, GPIO1_BASE_ADDR + 0x4);
 
-	udelay(500);
+	//udelay(500);
 
-	reg = readl(GPIO1_BASE_ADDR + 0x0);
-	reg |= 0x2000000;
-	writel(reg, GPIO1_BASE_ADDR + 0x0);
+	//reg = readl(GPIO1_BASE_ADDR + 0x0);
+	//reg |= 0x2000000;
+	//writel(reg, GPIO1_BASE_ADDR + 0x0);
 #else
 	/* Reset AR8031 PHY */
 	gpio_direction_output(IMX_GPIO_NR(1, 25) , 0);
-	udelay(500);
+	mdelay(10);
 	gpio_set_value(IMX_GPIO_NR(1, 25), 1);
+	udelay(100);
 #endif /* EMBEDSKY_E9 */
 }
 
@@ -314,9 +315,9 @@ static struct i2c_pads_info mx6dl_i2c_pad_info1 = {
 static void setup_spi(void)
 {
 #ifdef EMBEDSKY_E9
-	imx_iomux_v3_setup_multiple_pads(ecspi2_pads, ARRAY_SIZE(ecspi2_pads));
+	SETUP_IOMUX_PADS(ecspi2_pads);
 #else
-	imx_iomux_v3_setup_multiple_pads(ecspi1_pads, ARRAY_SIZE(ecspi1_pads));
+	SETUP_IOMUX_PADS(ecspi1_pads);
 #endif /* EMBEDSKY_E9 */
 }
 
@@ -328,7 +329,7 @@ iomux_v3_cfg_t const pcie_pads[] = {
 
 static void setup_pcie(void)
 {
-	imx_iomux_v3_setup_multiple_pads(pcie_pads, ARRAY_SIZE(pcie_pads));
+	SETUP_IOMUX_PADS(pcie_pads);
 }
 
 iomux_v3_cfg_t const di0_pads[] = {
@@ -341,9 +342,9 @@ static void setup_iomux_uart(void)
 {
 	SETUP_IOMUX_PADS(uart1_pads);
 #ifdef EMBEDSKY_E9
-	imx_iomux_v3_setup_multiple_pads(uart2_pads, ARRAY_SIZE(uart2_pads));
-	imx_iomux_v3_setup_multiple_pads(uart3_pads, ARRAY_SIZE(uart3_pads));
-	imx_iomux_v3_setup_multiple_pads(uart4_pads, ARRAY_SIZE(uart4_pads));
+	SETUP_IOMUX_PADS(uart2_pads);
+	SETUP_IOMUX_PADS(uart3_pads);
+	SETUP_IOMUX_PADS(uart4_pads);
 #endif /* EMBEDSKY_E9 */
 }
 
@@ -408,7 +409,7 @@ int board_mmc_init(bd_t *bis)
 			break;
 		case 1:
 			SETUP_IOMUX_PADS(usdhc3_pads);
-			//gpio_direction_input(USDHC3_CD_GPIO);
+			gpio_direction_input(USDHC3_CD_GPIO);
 			usdhc_cfg[1].sdhc_clk = mxc_get_clock(MXC_ESDHC3_CLK);
 			break;
 		case 2:
@@ -729,7 +730,7 @@ static iomux_v3_cfg_t const poweron_pads[] = {
 };
 static void e9_board_poweron(int onoff)
 {
-	imx_iomux_v3_setup_multiple_pads(poweron_pads, ARRAY_SIZE(poweron_pads));
+	SETUP_IOMUX_PADS(poweron_pads);
 	if (onoff != 0)
 		gpio_direction_output(BOARD_POWER_CTRL, 1);
 	else
@@ -743,7 +744,7 @@ int board_init(void)
 	gd->bd->bi_boot_params = PHYS_SDRAM + 0x100;
 
 #ifdef EMBEDSKY_E9
-	e9_board_poweron(1);
+	//e9_board_poweron(1);
 #endif /* EMBEDSKY_E9 */
 
 #ifdef CONFIG_MXC_SPI
@@ -763,36 +764,37 @@ int board_init(void)
 	return 0;
 }
 
-#ifdef CONFIG_POWER
-int power_init_board(void)
-{
-	struct pmic *p;
-	unsigned int reg;
-	int ret;
+//#ifndef EMBEDSKY_E9
+//#if 0
+//int power_init_board(void)
+//{
+//	struct pmic *p;
+//	unsigned int reg;
+//	int ret;
+//
+//	p = pfuze_common_init(I2C_PMIC);
+//	if (!p)
+//		return -ENODEV;
 
-	p = pfuze_common_init(I2C_PMIC);
-	if (!p)
-		return -ENODEV;
-
-	ret = pfuze_mode_init(p, APS_PFM);
-	if (ret < 0)
-		return ret;
+//	ret = pfuze_mode_init(p, APS_PFM);
+//	if (ret < 0)
+//		return ret;
 
 	/* Increase VGEN3 from 2.5 to 2.8V */
-	pmic_reg_read(p, PFUZE100_VGEN3VOL, &reg);
-	reg &= ~LDO_VOL_MASK;
-	reg |= LDOB_2_80V;
-	pmic_reg_write(p, PFUZE100_VGEN3VOL, reg);
+//	pmic_reg_read(p, PFUZE100_VGEN3VOL, &reg);
+//	reg &= ~LDO_VOL_MASK;
+//	reg |= LDOB_2_80V;
+//	pmic_reg_write(p, PFUZE100_VGEN3VOL, reg);
 
-	/* Increase VGEN5 from 2.8 to 3V */
-	pmic_reg_read(p, PFUZE100_VGEN5VOL, &reg);
-	reg &= ~LDO_VOL_MASK;
-	reg |= LDOB_3_00V;
-	pmic_reg_write(p, PFUZE100_VGEN5VOL, reg);
+//	/* Increase VGEN5 from 2.8 to 3V */
+//	pmic_reg_read(p, PFUZE100_VGEN5VOL, &reg);
+//	reg &= ~LDO_VOL_MASK;
+//	reg |= LDOB_3_00V;
+//	pmic_reg_write(p, PFUZE100_VGEN5VOL, reg);
 
-	return 0;
-}
-#endif /* CONFIG_POWER */
+//	return 0;
+//}
+//#endif /* EMBEDSKY_E9 */
 
 #ifdef CONFIG_MXC_SPI
 int board_spi_cs_gpio(unsigned bus, unsigned cs)

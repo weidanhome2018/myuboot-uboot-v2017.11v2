@@ -36,11 +36,11 @@
 
 #define CONFIG_SYS_FSL_USDHC_NUM	3
 #if defined(CONFIG_ENV_IS_IN_MMC)
-#ifdef CONFIG_EMBEDSKY_E9
+#ifdef EMBEDSKY_E9
 #define CONFIG_SYS_MMC_ENV_DEV			0	/* SDHC4 */
 #else
 #define CONFIG_SYS_MMC_ENV_DEV			1	/* SDHC3 */
-#endif /* CONFIG_EMBEDSKY_E9 */
+#endif /* EMBEDSKY_E9 */
 #endif
 
 #ifdef CONFIG_CMD_PCI
@@ -59,12 +59,13 @@
 #define CONFIG_SYS_I2C_SPEED		  100000
 
 /* PMIC */
+/*
 #ifndef CONFIG_EMBEDSKY_E9
-#define CONFIG_POWER
 #define CONFIG_POWER_I2C
 #define CONFIG_POWER_PFUZE100
 #define CONFIG_POWER_PFUZE100_I2C_ADDR	0x08
-#endif /* !CONFIG_EMBEDSKY_E9 */
+#endif
+*/ /* !CONFIG_EMBEDSKY_E9 */
 
 /* USB Configs */
 #ifdef CONFIG_CMD_USB
