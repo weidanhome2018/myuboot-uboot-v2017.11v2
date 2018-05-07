@@ -59,13 +59,13 @@
 #define CONFIG_SYS_I2C_SPEED		  100000
 
 /* PMIC */
-/*
-#ifndef CONFIG_EMBEDSKY_E9
+
+#ifndef EMBEDSKY_E9
 #define CONFIG_POWER_I2C
 #define CONFIG_POWER_PFUZE100
 #define CONFIG_POWER_PFUZE100_I2C_ADDR	0x08
 #endif
-*/ /* !CONFIG_EMBEDSKY_E9 */
+ /* EMBEDSKY_E9 */
 
 /* USB Configs */
 #ifdef CONFIG_CMD_USB
