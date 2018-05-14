@@ -14,7 +14,7 @@
 #endif
 
 /* 适用于天嵌科技的系列板卡 */
-#define EMBEDSKY_E9	
+/*#define EMBEDSKY_E9*/	
 
 #define CONFIG_MACH_TYPE	3980
 #define CONFIG_MXC_UART_BASE	UART1_BASE
@@ -39,7 +39,7 @@
 #ifdef EMBEDSKY_E9
 #define CONFIG_SYS_MMC_ENV_DEV			0	/* SDHC4 */
 #else
-#define CONFIG_SYS_MMC_ENV_DEV			1	/* SDHC3 */
+#define CONFIG_SYS_MMC_ENV_DEV			0	/* SDHC3 */
 #endif /* EMBEDSKY_E9 */
 #endif
 
@@ -61,6 +61,7 @@
 /* PMIC */
 
 #ifndef EMBEDSKY_E9
+#define CONFIG_POWER
 #define CONFIG_POWER_I2C
 #define CONFIG_POWER_PFUZE100
 #define CONFIG_POWER_PFUZE100_I2C_ADDR	0x08
